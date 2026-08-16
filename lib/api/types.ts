@@ -81,6 +81,16 @@ export interface ModelCall {
   created_at: string;
 }
 
+export interface ToolCall {
+  id: string;
+  tool_id: string;
+  permission_used: string;
+  request: Record<string, unknown>;
+  response: Record<string, unknown> | null;
+  latency_ms: number | null;
+  created_at: string;
+}
+
 export interface TraceStep {
   id: string;
   step_type: string;
@@ -91,7 +101,7 @@ export interface TraceStep {
   input: Record<string, unknown>;
   output: Record<string, unknown> | null;
   model_calls: ModelCall[];
-  tool_calls: unknown[];
+  tool_calls: ToolCall[];
   children: TraceStep[];
 }
 
@@ -106,3 +116,77 @@ export const TERMINAL_EXECUTION_STATUSES = new Set([
   "failed",
   "cancelled",
 ]);
+
+export interface Tool {
+  id: string;
+  tenant_id: string;
+  name: string;
+  description: string | null;
+  input_schema: Record<string, unknown> | null;
+  output_schema: Record<string, unknown> | null;
+  created_at: string;
+}
+
+export interface PaginatedTools {
+  items: Tool[];
+  next_cursor: string | null;
+}
+
+export interface PolicyRule {
+  tool_id: string;
+  action: "read" | "write" | "execute" | "*";
+  resource_pattern?: string;
+  effect: "allow" | "deny" | "human_approval";
+}
+
+export interface Policy {
+  id: string;
+  tenant_id: string;
+  name: string;
+  rule: PolicyRule;
+  created_by: string | null;
+  created_at: string;
+}
+
+export interface PaginatedPolicies {
+  items: Policy[];
+  next_cursor: string | null;
+}
+
+export interface KnowledgeBase {
+  id: string;
+  tenant_id: string;
+  name: string;
+  source_type: string;
+  status: string;
+  created_at: string;
+}
+
+export interface PaginatedKnowledgeBases {
+  items: KnowledgeBase[];
+  next_cursor: string | null;
+}
+
+export interface Document {
+  id: string;
+  knowledge_base_id: string;
+  source_uri: string;
+  title: string | null;
+  checksum: string;
+  indexed_at: string | null;
+  chunk_count: number | null;
+}
+
+export interface Approval {
+  id: string;
+  execution_id: string;
+  status: string;
+  requested_at: string;
+  decided_at: string | null;
+  approver_user_id: string | null;
+  comment: string | null;
+  timeout_at: string | null;
+  tool_name: string;
+  reason: string;
+  agent_display_name: string;
+}

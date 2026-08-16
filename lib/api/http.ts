@@ -38,9 +38,13 @@ export async function apiFetch<T>(
   const data = text ? JSON.parse(text) : undefined;
 
   if (!res.ok) {
+    const envelope =
+      data && typeof data === "object" && "error" in data
+        ? (data as { error?: { message?: unknown } }).error
+        : undefined;
     const message =
-      (data && typeof data === "object" && "message" in data
-        ? String((data as { message: unknown }).message)
+      (envelope && typeof envelope === "object" && "message" in envelope
+        ? String(envelope.message)
         : undefined) ?? `Request failed with status ${res.status}`;
     throw new ApiError(res.status, message, data);
   }

@@ -3,7 +3,15 @@ import type {
   Agent,
   AgentVersion,
   Deployment,
+  Document,
+  KnowledgeBase,
   PaginatedAgents,
+  PaginatedKnowledgeBases,
+  PaginatedPolicies,
+  PaginatedTools,
+  Policy,
+  PolicyRule,
+  Tool,
   ValidationResult,
 } from "./types";
 
@@ -63,4 +71,63 @@ export const controlPlane = {
         environment,
       }),
     }),
+
+  listTools: () => apiFetch<PaginatedTools>(BASE_URL, "/tools"),
+
+  createTool: (input: {
+    name: string;
+    description?: string;
+    input_schema?: object;
+    output_schema?: object;
+  }) =>
+    apiFetch<Tool>(BASE_URL, "/tools", {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
+
+  getTool: (id: string) => apiFetch<Tool>(BASE_URL, `/tools/${id}`),
+
+  listPolicies: () => apiFetch<PaginatedPolicies>(BASE_URL, "/policies"),
+
+  createPolicy: (input: { name: string; rule: PolicyRule }) =>
+    apiFetch<Policy>(BASE_URL, "/policies", {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
+
+  getPolicy: (id: string) => apiFetch<Policy>(BASE_URL, `/policies/${id}`),
+
+  updatePolicy: (id: string, input: { name?: string; rule?: PolicyRule }) =>
+    apiFetch<Policy>(BASE_URL, `/policies/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    }),
+
+  listKnowledgeBases: () =>
+    apiFetch<PaginatedKnowledgeBases>(BASE_URL, "/knowledge"),
+
+  createKnowledgeBase: (input: { name: string; source_type: string }) =>
+    apiFetch<KnowledgeBase>(BASE_URL, "/knowledge", {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
+
+  getKnowledgeBase: (id: string) =>
+    apiFetch<KnowledgeBase>(BASE_URL, `/knowledge/${id}`),
+
+  listDocuments: (knowledgeBaseId: string) =>
+    apiFetch<Document[]>(BASE_URL, `/knowledge/${knowledgeBaseId}/documents`),
+
+  createDocument: (
+    knowledgeBaseId: string,
+    input: { source_uri: string; title?: string; content: string },
+  ) =>
+    apiFetch<Document>(
+      BASE_URL,
+      `/knowledge/${knowledgeBaseId}/documents`,
+      {
+        method: "POST",
+        body: JSON.stringify(input),
+      },
+    ),
 };

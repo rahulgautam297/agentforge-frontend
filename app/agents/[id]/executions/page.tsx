@@ -22,7 +22,19 @@ function durationMs(started: string, ended: string | null): string {
   return `${ms}ms`;
 }
 
+function compactJson(value: unknown): string {
+  const str = JSON.stringify(value);
+  if (!str) return "—";
+  return str.length > 300 ? `${str.slice(0, 300)}…` : str;
+}
+
 function TraceStepView({ step }: { step: TraceStep }) {
+  const hasOutputFallback =
+    step.model_calls.length === 0 &&
+    step.tool_calls.length === 0 &&
+    step.output != null &&
+    Object.keys(step.output).length > 0;
+
   return (
     <li className="rounded-md border border-[var(--border)] p-3">
       <div className="flex flex-wrap items-center gap-2">
@@ -53,6 +65,56 @@ function TraceStepView({ step }: { step: TraceStep }) {
             </li>
           ))}
         </ul>
+      )}
+
+      {step.tool_calls.length > 0 && (
+        <ul className="mt-2 space-y-1">
+          {step.tool_calls.map((call) => (
+            <li
+              key={call.id}
+              className="rounded bg-[var(--surface)] px-3 py-2 text-xs text-[var(--muted)]"
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-mono text-[var(--foreground)]">
+                  {call.tool_id.slice(0, 8)}
+                </span>
+                <span className="text-[var(--muted)]">
+                  {call.permission_used}
+                </span>
+                <span className="text-[var(--muted)]">
+                  {call.latency_ms != null ? `${call.latency_ms}ms` : "—"}
+                </span>
+                {call.response === null && (
+                  <span className="rounded-full bg-[var(--danger)]/15 px-2 py-0.5 text-xs text-[var(--danger)]">
+                    blocked
+                  </span>
+                )}
+              </div>
+              <div className="mt-1 space-y-0.5">
+                <p className="font-mono break-all">
+                  request: {compactJson(call.request)}
+                </p>
+                <p className="font-mono break-all">
+                  response:{" "}
+                  {call.response === null
+                    ? "no response"
+                    : compactJson(call.response)}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {hasOutputFallback && (
+        <details className="mt-2 rounded bg-[var(--surface)] px-3 py-2 text-xs text-[var(--muted)]">
+          <summary className="cursor-pointer text-[var(--foreground)]">
+            output
+          </summary>
+          <p className="mt-1 font-mono break-all">
+            {compactJson(step.output)}
+          </p>
+        </details>
       )}
 
       {step.children.length > 0 && (

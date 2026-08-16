@@ -8,6 +8,7 @@ const LINKS = [
   { href: "/agents", label: "Agents" },
   { href: "/knowledge", label: "Knowledge" },
   { href: "/tools", label: "Tools" },
+  { href: "/policies", label: "Policies" },
   { href: "/models", label: "Models" },
   { href: "/evaluations", label: "Evaluations" },
   { href: "/approvals", label: "Approvals" },
