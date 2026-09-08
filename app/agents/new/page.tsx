@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Editor from "@monaco-editor/react";
 import * as yaml from "js-yaml";
 import { controlPlane } from "@/lib/api/controlPlane";
+import { generateIdempotencyKey } from "@/lib/api/http";
 import type { ValidationResult } from "@/lib/api/types";
 
 const DEFAULT_YAML = `schema_version: "1.0.0"
@@ -119,7 +120,7 @@ export default function NewAgentPage() {
       if (!agentId || !versionId) {
         throw new Error("Save the agent before deploying.");
       }
-      const key = crypto.randomUUID();
+      const key = generateIdempotencyKey();
       setDeployIdempotencyKey(key);
       return controlPlane.deploy(agentId, versionId, key, "local");
     },

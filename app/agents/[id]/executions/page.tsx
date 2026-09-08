@@ -3,6 +3,7 @@
 import { use, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { executionPlane } from "@/lib/api/executionPlane";
+import { generateIdempotencyKey } from "@/lib/api/http";
 import { TERMINAL_EXECUTION_STATUSES, type TraceStep } from "@/lib/api/types";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -156,7 +157,7 @@ export default function AgentExecutionsPage({
 
   const runMutation = useMutation({
     mutationFn: async () => {
-      const key = crypto.randomUUID();
+      const key = generateIdempotencyKey();
       setPendingKey(key);
       return executionPlane.triggerExecution(agentId, message, key);
     },
