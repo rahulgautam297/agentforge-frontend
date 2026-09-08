@@ -12,18 +12,28 @@
   --muted: #8b93a1;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
-}
+/* Tailwind v4 own import above emits its utilities inside @layer
+   utilities -- an unlayered rule beats any layered rule regardless of
+   specificity, so plain body/a selectors here would silently win over
+   every text or bg utility class that tries to override them (e.g. a
+   Link styled with a text-black utility rendering with the accent
+   color anyway, invisible against an accent-colored background).
+   @layer base puts these at the same priority Tailwind own
+   preflight/reset uses, so utility classes correctly override them. */
+@layer base {
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family:
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      Roboto,
+      sans-serif;
+  }
 
-a {
-  color: var(--accent);
+  a {
+    color: var(--accent);
+  }
 }
