@@ -1,5 +1,5 @@
 import { apiFetch } from "./http";
-import type { Approval, Execution, ExecutionTrace } from "./types";
+import type { Approval, EvalRun, Execution, ExecutionTrace } from "./types";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_EXECUTION_PLANE_URL ??
@@ -39,4 +39,13 @@ export const executionPlane = {
       method: "POST",
       body: JSON.stringify({ decision, comment }),
     }),
+
+  triggerEvalRun: (suiteId: string, agentId: string) =>
+    apiFetch<EvalRun>(BASE_URL, `/evaluations/${suiteId}/run`, {
+      method: "POST",
+      body: JSON.stringify({ agent_id: agentId }),
+    }),
+
+  getEvalRun: (runId: string) =>
+    apiFetch<EvalRun>(BASE_URL, `/evaluations/runs/${runId}`),
 };

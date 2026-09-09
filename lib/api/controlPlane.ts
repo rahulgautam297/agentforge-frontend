@@ -4,8 +4,10 @@ import type {
   AgentVersion,
   Deployment,
   Document,
+  EvaluationSuite,
   KnowledgeBase,
   PaginatedAgents,
+  PaginatedEvaluationSuites,
   PaginatedKnowledgeBases,
   PaginatedPolicies,
   PaginatedTools,
@@ -130,4 +132,13 @@ export const controlPlane = {
         body: JSON.stringify(input),
       },
     ),
+
+  listEvaluationSuites: () =>
+    apiFetch<PaginatedEvaluationSuites>(BASE_URL, "/evaluations"),
+
+  createEvaluationSuite: (input: { name: string; yaml_source: string }) =>
+    apiFetch<EvaluationSuite>(BASE_URL, "/evaluations", {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
 };

@@ -177,6 +177,66 @@ export interface Document {
   chunk_count: number | null;
 }
 
+export interface EvalTaskGrading {
+  kind: "exact_match" | "judge" | "unit_test";
+  expected?: string;
+  case_sensitive?: boolean;
+  rubric?: string;
+  ground_truth?: string;
+  threshold?: number;
+  script?: string;
+}
+
+export interface EvalTask {
+  id: string;
+  input: Record<string, unknown>;
+  grading: EvalTaskGrading;
+}
+
+export interface EvaluationSuiteConfig {
+  tasks: EvalTask[];
+  judge?: { provider?: string; model_id?: string };
+}
+
+export interface EvaluationSuite {
+  id: string;
+  tenant_id: string;
+  name: string;
+  config: EvaluationSuiteConfig;
+  created_at: string;
+}
+
+export interface PaginatedEvaluationSuites {
+  items: EvaluationSuite[];
+}
+
+export interface EvalResult {
+  id: string;
+  execution_id: string | null;
+  case_id: string;
+  score: number | null;
+  passed: boolean | null;
+  details: Record<string, unknown> | null;
+}
+
+export interface EvalRunSummary {
+  total: number;
+  passed: number;
+  failed: number;
+  avg_score: number | null;
+}
+
+export interface EvalRun {
+  id: string;
+  evaluation_suite_id: string;
+  agent_version_id: string;
+  status: string;
+  started_at: string;
+  completed_at: string | null;
+  results: EvalResult[];
+  summary: EvalRunSummary;
+}
+
 export interface Approval {
   id: string;
   execution_id: string;
